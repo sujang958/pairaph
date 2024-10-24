@@ -1,12 +1,16 @@
-import forms from '@tailwindcss/forms';
-import type { Config } from 'tailwindcss';
+import forms from "@tailwindcss/forms"
+import type { Config } from "tailwindcss"
 
 export default {
-	content: ['./src/**/*.{html,js,svelte,ts}'],
+	content: ["./src/**/*.{html,js,svelte,ts}"],
 
 	theme: {
-		extend: {}
+		extend: {
+			fontFamily: {
+				pretendard: ["Pretendard Variable", "sans-serif"]
+			}
+		}
 	},
 
 	plugins: [forms]
-} satisfies Config;
+} satisfies Config
