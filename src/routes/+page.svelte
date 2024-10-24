@@ -19,39 +19,57 @@
 		})
 
 		document.addEventListener("mouseup", () => {
-			if (draggedGraphCopy) draggedGraphCopy.remove()
+			if (draggedGraphCopy) {
+				draggedGraphCopy.remove()
+				draggedGraphCopy = null
+			}
 		})
-
 		// const calculator = Desmos.GraphingCalculator(graph, { expressions: false })
 		// calculator.setExpression({ id: "graph1", latex: "y=x^2" })
 	})
 </script>
 
 <div class="flex flex-row w-full p-2">
-	<section class="grid w-1/2 gap-4 grid-cols-2">
-		<div class="rounded-lg px-4 py-2 border border-neutral-200 h-80">
+	<section class="grid w-1/2 gap-4 grid-cols-3">
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div
+			class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32"
+			onmouseenter={(event) => {
+				if (draggedGraphCopy) event.currentTarget.classList.add("bg-neutral-400/40")
+			}}
+			onmouseleave={(event) => {
+				if (draggedGraphCopy) event.currentTarget.classList.remove("bg-neutral-400/40")
+			}}
+		>
+			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
+		</div>
+		<div class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32">
+			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
+		</div>
+		<div class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32">
+			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
+		</div>
+		<div class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32">
 			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
 		</div>
 	</section>
 
-	<section class="grid w-1/2 gap-4">
+	<section class="grid w-1/2 gap-4 grid-cols-3">
 		{#each graphs as graph, i (graph.id)}
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 			<div
 				role="listitem"
 				class="p-2 w-min"
 				onmousedown={(event) => {
-					console.log(event.currentTarget)
 					const graphItem = event.currentTarget as HTMLDivElement
 					const cloned = graphItem.cloneNode(true) as HTMLDivElement
 
 					const rect = graphItem.getBoundingClientRect()
 
-					cloned.classList.add("fixed", "z-50")
+					cloned.classList.add("fixed", "z-50", "select-none", "pointer-events-none")
 					document.body.append(cloned)
 
 					cloned.style.transform = `translate(-50%, -${Math.abs(rect.height - 20)}px)`
-					console.log(cloned.style.transform, `translate(-50%, -${rect.height - 20}px)`)
 					cloned.style.top = `${event.clientY}px`
 					cloned.style.left = `${event.clientX}px`
 
