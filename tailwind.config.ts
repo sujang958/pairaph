@@ -7,7 +7,8 @@ export default {
 	theme: {
 		extend: {
 			fontFamily: {
-				pretendard: ["Pretendard Variable", "sans-serif"]
+				pretendard: ["Pretendard Variable", "sans-serif"],
+				"anonymous-pro": ["Anonymous Pro", "sans-serif"]
 			}
 		}
 	},

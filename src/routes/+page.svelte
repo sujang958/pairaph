@@ -27,12 +27,12 @@
 	})
 </script>
 
-<p class="text-5xl">hi</p>
-
-<div class="flex flex-row w-full">
+<div class="flex flex-row w-full p-2">
 	<section class="grid w-1/2 gap-4 grid-cols-2">
-    <div></div>
-  </section>
+		<div class="rounded-lg px-4 py-2 border border-neutral-200 h-80">
+			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
+		</div>
+	</section>
 
 	<section class="grid w-1/2 gap-4">
 		{#each graphs as graph, i (graph.id)}
