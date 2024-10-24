@@ -13,6 +13,10 @@
 
 	let consideredAnswer: HTMLDivElement | null
 
+	const check = () => {
+		// TODO: add a logic that checks whether it is correct
+	}
+
 	onMount(() => {
 		document.addEventListener("mousemove", (event) => {
 			if (!draggedGraphCopy) return
@@ -22,10 +26,12 @@
 		})
 
 		document.addEventListener("mouseup", () => {
-			if (draggedGraphCopy) {
-				draggedGraphCopy.remove()
-				draggedGraphCopy = null
-			}
+			if (!draggedGraphCopy) return
+
+			draggedGraphCopy.remove()
+			draggedGraphCopy = null
+
+			if (consideredAnswer) check()
 		})
 		// const calculator = Desmos.GraphingCalculator(graph, { expressions: false })
 		// calculator.setExpression({ id: "graph1", latex: "y=x^2" })
@@ -39,9 +45,11 @@
 				class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32 transition duration-200"
 				onmouseenter={(event) => {
 					if (draggedGraphCopy) event.currentTarget.classList.add("bg-neutral-400/30")
+					consideredAnswer = event.currentTarget
 				}}
 				onmouseleave={(event) => {
 					if (draggedGraphCopy) event.currentTarget.classList.remove("bg-neutral-400/30")
+					consideredAnswer = null
 				}}
 			>
 				<p class="text-xl font-anonymous-pro font-bold">{graph.latex}</p>
@@ -70,7 +78,6 @@
 
 					draggedGraphCopy = cloned
 				}}
-				onmouseup={(event) => {}}
 			>
 				<div class="h-64 w-64"></div>
 				<div
