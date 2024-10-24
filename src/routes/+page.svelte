@@ -30,7 +30,9 @@
 <p class="text-5xl">hi</p>
 
 <div class="flex flex-row w-full">
-	<section class="w-1/2"></section>
+	<section class="grid w-1/2 gap-4 grid-cols-2">
+    <div></div>
+  </section>
 
 	<section class="grid w-1/2 gap-4">
 		{#each graphs as graph, i (graph.id)}
