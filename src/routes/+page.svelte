@@ -2,13 +2,16 @@
 	import { onMount } from "svelte"
 	import { flip } from "svelte/animate"
 
-	const graphs: Extract<Desmos.ExpressionState, { type?: "expression" }>[] = [
-		{ type: "expression", id: "graph1", latex: "y=|x|" },
-		{ type: "expression", id: "graph2", latex: "y=x^2" }
-	]
+	const graphs: (Extract<Desmos.ExpressionState, { type?: "expression" }> & { solved: boolean })[] =
+		[
+			{ type: "expression", id: "graph1", latex: "y=|x|", solved: false },
+			{ type: "expression", id: "graph2", latex: "y=x^2", solved: false }
+		]
 
 	let draggedGraph: HTMLDivElement | null
 	let draggedGraphCopy: HTMLDivElement | null
+
+	let consideredAnswer: HTMLDivElement | null
 
 	onMount(() => {
 		document.addEventListener("mousemove", (event) => {
@@ -31,27 +34,19 @@
 
 <div class="flex flex-row w-full p-2">
 	<section class="grid w-1/2 gap-4 grid-cols-3">
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div
-			class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32"
-			onmouseenter={(event) => {
-				if (draggedGraphCopy) event.currentTarget.classList.add("bg-neutral-400/40")
-			}}
-			onmouseleave={(event) => {
-				if (draggedGraphCopy) event.currentTarget.classList.remove("bg-neutral-400/40")
-			}}
-		>
-			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
-		</div>
-		<div class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32">
-			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
-		</div>
-		<div class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32">
-			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
-		</div>
-		<div class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32">
-			<p class="text-xl font-anonymous-pro font-bold">y = |x|</p>
-		</div>
+		{#each graphs as graph}<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div
+				class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32 transition duration-200"
+				onmouseenter={(event) => {
+					if (draggedGraphCopy) event.currentTarget.classList.add("bg-neutral-400/30")
+				}}
+				onmouseleave={(event) => {
+					if (draggedGraphCopy) event.currentTarget.classList.remove("bg-neutral-400/30")
+				}}
+			>
+				<p class="text-xl font-anonymous-pro font-bold">{graph.latex}</p>
+			</div>
+		{/each}
 	</section>
 
 	<section class="grid w-1/2 gap-4 grid-cols-3">
