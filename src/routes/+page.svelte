@@ -7,8 +7,8 @@
 		{ type: "expression", id: "graph2", latex: "y=x^2" }
 	]
 
-	let draggedGraph: HTMLDivElement
-	let draggedGraphCopy: HTMLDivElement
+	let draggedGraph: HTMLDivElement | null
+	let draggedGraphCopy: HTMLDivElement | null
 
 	onMount(() => {
 		document.addEventListener("mousemove", (event) => {
@@ -45,9 +45,13 @@
 					const graphItem = event.currentTarget as HTMLDivElement
 					const cloned = graphItem.cloneNode(true) as HTMLDivElement
 
-					cloned.classList.add("fixed", "z-50", "transform", "-translate-x-1/2", "-translate-y-1/2")
+					const rect = graphItem.getBoundingClientRect()
+
+					cloned.classList.add("fixed", "z-50")
 					document.body.append(cloned)
 
+					cloned.style.transform = `translate(-50%, -${Math.abs(rect.height - 20)}px)`
+					console.log(cloned.style.transform, `translate(-50%, -${rect.height - 20}px)`)
 					cloned.style.top = `${event.clientY}px`
 					cloned.style.left = `${event.clientX}px`
 
