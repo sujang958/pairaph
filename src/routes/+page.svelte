@@ -7,9 +7,8 @@
 		solved: boolean
 		rendered: boolean
 		dataUri?: string
-	})[] = $state([
-		{ type: "expression", id: "graph1", latex: String.raw`y=x`, solved: false, rendered: false },
-		{ type: "expression", id: "graph2", latex: "y=x^2", solved: false, rendered: false }
+	})[][] = $state([
+		[{ type: "expression", id: "graph1", latex: String.raw`y=x`, solved: false, rendered: false }]
 	])
 
 	let draggedGraph: HTMLDivElement | null
@@ -17,6 +16,9 @@
 
 	let actualAnswer: string | null
 	let consideredAnswer: string | null
+
+	let calcElement: HTMLDivElement
+	let calc: Desmos.Calculator
 
 	const check = ({
 		consideredAnswer,
@@ -35,7 +37,14 @@
 		graphs[i] = { ...original!, solved: true }
 	}
 
+	const addGraph = () => {
+		const graphs = calc.getExpressions()
+
+	}
+
 	onMount(() => {
+		calc = Desmos.GraphingCalculator(calcElement)
+
 		document.addEventListener("mousemove", (event) => {
 			if (!draggedGraphCopy) return
 
@@ -76,6 +85,31 @@
 	// TODO: add shuffling
 </script>
 
+<div class="fixed inset-0 bg-black/40 px-32 py-24 z-20">
+	<div class="bg-white rounded-lg p-3 relative">
+		<p class="text-2xl font-semibold">Add a graph</p>
+		<p class="text-base mt-0.5">Only the last graph will be shown.</p>
+		<div bind:this={calcElement} id="calc" class="mt-3 w-full h-[70vh]"></div>
+
+		<button
+			onclick={addGraph}
+			class="absolute right-4 bottom-4 bg-black p-4 rounded-full"
+			aria-label="Check"
+			type="button"
+			><svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke-width="2"
+				stroke="white"
+				class="size-6"
+			>
+				<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+			</svg>
+		</button>
+	</div>
+</div>
+
 <div class="flex flex-row w-full p-2">
 	<section class="grid w-1/2 gap-4 grid-cols-3">
 		{#each graphs as graph}<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -112,7 +146,7 @@
 					const rect = graphItem.getBoundingClientRect()
 
 					cloned.classList.add("fixed", "z-50", "select-none", "pointer-events-none")
-					
+
 					const innerGraph = cloned.querySelector(".shown-graph")
 					if (innerGraph) innerGraph.innerHTML = `<img src="${graph.dataUri}" />`
 
