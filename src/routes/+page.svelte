@@ -1,20 +1,37 @@
 <script lang="ts">
 	import { onMount } from "svelte"
+	import toast from "svelte-french-toast"
 	import { flip } from "svelte/animate"
 
-	const graphs: (Extract<Desmos.ExpressionState, { type?: "expression" }> & { solved: boolean })[] =
-		[
-			{ type: "expression", id: "graph1", latex: "y=|x|", solved: false },
-			{ type: "expression", id: "graph2", latex: "y=x^2", solved: false }
-		]
+	let graphs: (Extract<Desmos.ExpressionState, { type?: "expression" }> & {
+		solved: boolean
+		rendered: boolean
+	})[] = $state([
+		{ type: "expression", id: "graph1", latex: String.raw`y=x`, solved: false, rendered: false },
+		{ type: "expression", id: "graph2", latex: "y=x^2", solved: false, rendered: false }
+	])
 
 	let draggedGraph: HTMLDivElement | null
 	let draggedGraphCopy: HTMLDivElement | null
 
-	let consideredAnswer: HTMLDivElement | null
+	let actualAnswer: string | null
+	let consideredAnswer: string | null
 
-	const check = () => {
-		// TODO: add a logic that checks whether it is correct
+	const check = ({
+		consideredAnswer,
+		actualAnswer
+	}: {
+		consideredAnswer: string
+		actualAnswer: string
+	}) => {
+		if (consideredAnswer.trim() != actualAnswer.trim()) return toast.error("아님ㄴ")
+
+		toast.success(`맞음ㅁ (${actualAnswer})`)
+
+		const i = graphs.findIndex(({ latex }) => latex == actualAnswer)
+		const original = graphs.at(i)
+
+		graphs[i] = { ...original!, solved: true }
 	}
 
 	onMount(() => {
@@ -27,14 +44,37 @@
 
 		document.addEventListener("mouseup", () => {
 			if (!draggedGraphCopy) return
+			if (consideredAnswer && actualAnswer) check({ consideredAnswer, actualAnswer })
 
 			draggedGraphCopy.remove()
 			draggedGraphCopy = null
-
-			if (consideredAnswer) check()
 		})
-		// const calculator = Desmos.GraphingCalculator(graph, { expressions: false })
-		// calculator.setExpression({ id: "graph1", latex: "y=x^2" })
+	})
+
+	$effect(() => {
+		console.log(graphs)
+	})
+
+	$effect(() => {
+		graphs.forEach((graph) => {
+			const graphElement = document.querySelector(`[data-latex='${graph.id}_${graph.latex}']`)
+
+			if (!graphElement) return
+
+			const calculator = Desmos.GraphingCalculator(graphElement as HTMLDivElement, {
+				expressions: false
+			})
+
+			calculator.setExpression(graph)
+
+			// calculator.asyncScreenshot({ format: "svg" }, (dataUri) => {
+			// 	const graphContainer = document.createElement("div")
+
+			// 	graphContainer.innerHTML = dataUri
+
+			// 	document.body.append(graphContainer)
+			// })
+		})
 	})
 </script>
 
@@ -45,7 +85,7 @@
 				class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32 transition duration-200"
 				onmouseenter={(event) => {
 					if (draggedGraphCopy) event.currentTarget.classList.add("bg-neutral-400/30")
-					consideredAnswer = event.currentTarget
+					consideredAnswer = graph.latex ?? null
 				}}
 				onmouseleave={(event) => {
 					if (draggedGraphCopy) event.currentTarget.classList.remove("bg-neutral-400/30")
@@ -58,7 +98,7 @@
 	</section>
 
 	<section class="grid w-1/2 gap-4 grid-cols-3">
-		{#each graphs as graph, i (graph.id)}
+		{#each graphs.filter(({ solved }) => !solved) as graph, i (graph.id)}
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 			<div
 				role="listitem"
@@ -77,9 +117,10 @@
 					cloned.style.left = `${event.clientX}px`
 
 					draggedGraphCopy = cloned
+					actualAnswer = graph.latex ?? null
 				}}
 			>
-				<div class="h-64 w-64"></div>
+				<div class="h-64 w-64" data-latex={`${graph.id}_${graph.latex}`}></div>
 				<div
 					class="flex flex-row place-content-center cursor-pointer hover:bg-black/10 mt-1 rounded-lg p-1 transition duration-200"
 				>
