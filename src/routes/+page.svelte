@@ -6,6 +6,7 @@
 	let graphs: (Extract<Desmos.ExpressionState, { type?: "expression" }> & {
 		solved: boolean
 		rendered: boolean
+		dataUri?: string
 	})[] = $state([
 		{ type: "expression", id: "graph1", latex: String.raw`y=x`, solved: false, rendered: false },
 		{ type: "expression", id: "graph2", latex: "y=x^2", solved: false, rendered: false }
@@ -52,10 +53,6 @@
 	})
 
 	$effect(() => {
-		console.log(graphs)
-	})
-
-	$effect(() => {
 		graphs.forEach((graph, i) => {
 			const graphElement = document.querySelector(`[data-latex='${graph.id}_${graph.latex}']`)
 
@@ -70,13 +67,9 @@
 
 			graphs[i] = { ...graphs[i], rendered: true }
 
-			// calculator.asyncScreenshot({ format: "svg" }, (dataUri) => {
-			// 	const graphContainer = document.createElement("div")
-
-			// 	graphContainer.innerHTML = dataUri
-
-			// 	document.body.append(graphContainer)
-			// })
+			calculator.asyncScreenshot({ format: "png" }, (dataUri) => {
+				graphs[i].dataUri = dataUri
+			})
 		})
 	})
 </script>
@@ -85,7 +78,7 @@
 	<section class="grid w-1/2 gap-4 grid-cols-3">
 		{#each graphs as graph}<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div
-				class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32 transition duration-200"
+				class="select-none rounded-lg px-4 py-2 border border-neutral-200 transition duration-200"
 				onmouseenter={(event) => {
 					event.currentTarget.classList.add("bg-neutral-400/30")
 					consideredAnswer = graph.latex ?? null
@@ -96,6 +89,10 @@
 				}}
 			>
 				<p class="text-xl font-anonymous-pro font-bold">{graph.latex}</p>
+				{#if graph.solved}
+					<!-- if it's svg, {@html graph.dataUri} -->
+					<img src={graph.dataUri} class="z-0 rounded-lg mt-2" alt="graph for this" />
+				{/if}
 			</div>
 		{/each}
 	</section>
