@@ -56,16 +56,19 @@
 	})
 
 	$effect(() => {
-		graphs.forEach((graph) => {
+		graphs.forEach((graph, i) => {
 			const graphElement = document.querySelector(`[data-latex='${graph.id}_${graph.latex}']`)
 
 			if (!graphElement) return
+			if (graph.rendered) return
 
 			const calculator = Desmos.GraphingCalculator(graphElement as HTMLDivElement, {
 				expressions: false
 			})
 
 			calculator.setExpression(graph)
+
+			graphs[i] = { ...graphs[i], rendered: true }
 
 			// calculator.asyncScreenshot({ format: "svg" }, (dataUri) => {
 			// 	const graphContainer = document.createElement("div")
