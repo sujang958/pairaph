@@ -72,6 +72,8 @@
 			})
 		})
 	})
+
+	// TODO: add shuffling
 </script>
 
 <div class="flex flex-row w-full p-2">
@@ -102,7 +104,7 @@
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 			<div
 				role="listitem"
-				class="p-2 w-min"
+				class="p-2 w-min bg-neutral-50 rounded-lg"
 				onmousedown={(event) => {
 					const graphItem = event.currentTarget as HTMLDivElement
 					const cloned = graphItem.cloneNode(true) as HTMLDivElement
@@ -110,6 +112,10 @@
 					const rect = graphItem.getBoundingClientRect()
 
 					cloned.classList.add("fixed", "z-50", "select-none", "pointer-events-none")
+					
+					const innerGraph = cloned.querySelector(".shown-graph")
+					if (innerGraph) innerGraph.innerHTML = `<img src="${graph.dataUri}" />`
+
 					document.body.append(cloned)
 
 					cloned.style.transform = `translate(-50%, -${Math.abs(rect.height - 20)}px)`
@@ -120,7 +126,7 @@
 					actualAnswer = graph.latex ?? null
 				}}
 			>
-				<div class="h-64 w-64" data-latex={`${graph.id}_${graph.latex}`}></div>
+				<div class="h-64 w-64 shown-graph" data-latex={`${graph.id}_${graph.latex}`}></div>
 				<div
 					class="flex flex-row place-content-center cursor-pointer hover:bg-black/10 mt-1 rounded-lg p-1 transition duration-200"
 				>
