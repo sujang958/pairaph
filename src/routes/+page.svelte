@@ -87,11 +87,11 @@
 			<div
 				class="rounded-lg px-4 py-2 border border-neutral-200 max-h-80 h-32 transition duration-200"
 				onmouseenter={(event) => {
-					if (draggedGraphCopy) event.currentTarget.classList.add("bg-neutral-400/30")
+					event.currentTarget.classList.add("bg-neutral-400/30")
 					consideredAnswer = graph.latex ?? null
 				}}
 				onmouseleave={(event) => {
-					if (draggedGraphCopy) event.currentTarget.classList.remove("bg-neutral-400/30")
+					event.currentTarget.classList.remove("bg-neutral-400/30")
 					consideredAnswer = null
 				}}
 			>
